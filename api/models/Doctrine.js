@@ -11,6 +11,12 @@ module.exports = {
 
     name: 'string',
 
+    description: 'string',
+
+    priority: 'number',
+
+    readiness: 'number',
+
     // Associations
 
     fittings: { collection: 'fitting' }
