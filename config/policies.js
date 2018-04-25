@@ -17,6 +17,10 @@ module.exports.policies = {
   *                                                                          *
   ***************************************************************************/
 
-  // '*': true,
+  // Uncomment and use this once we're passing auth from the frontend
+  // '*': 'sessionAuth',
+  '*': true,
+
+  AuthController: { '*': true }
 
 };

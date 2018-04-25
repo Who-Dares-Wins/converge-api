@@ -9,8 +9,12 @@
     "@sailshq/lodash": "^3.10.3",
     "@sailshq/socket.io-redis": "^5.2.0",
     "async": "2.0.1",
+    "connect-redis": "^3.3.3",
+    "dotenv-safe": "^5.0.1",
+    "eve-sso-simple": "^2.0.1",
     "knex": "^0.14.6",
     "sails": "^1.0.1",
+    "sails-ember-rest": "^1.0.14",
     "sails-hook-orm": "^2.0.0-16",
     "sails-hook-sockets": "^1.4.0",
     "sails-postgresql": "1.0.0"

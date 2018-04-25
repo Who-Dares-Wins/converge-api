@@ -1,6 +1,8 @@
 {
   "generators": {
-    "modules": {}
+    "modules": {
+      "ember-rest": "sails-ember-rest"
+    }
   },
   "_generatedWith": {
     "sails": "1.0.1",

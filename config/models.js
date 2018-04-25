@@ -53,8 +53,7 @@ module.exports.models = {
   *                                                                          *
   ***************************************************************************/
 
-  // migrate: 'alter',
-
+  migrate: 'alter',
 
   /***************************************************************************
   *                                                                          *
@@ -115,7 +114,24 @@ module.exports.models = {
   *                                                                          *
   ***************************************************************************/
 
-  cascadeOnDestroy: true
+  cascadeOnDestroy: true,
 
+  // sails-ember-rest
+  associations: {
+    list: 'link',
+    detail: 'record'
+  },
+
+  validations: {
+    ignoreProperties: ['includeIn']
+  },
+
+  fetchRecordsOnUpdate: true,
+
+  fetchRecordsOnDestroy: true,
+
+  fetchRecordsOnCreate: true,
+
+  fetchRecordsOnCreateEach: true
 
 };
