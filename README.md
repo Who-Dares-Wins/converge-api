@@ -5,6 +5,11 @@ Under heavy development at this time.
 
 Written on [Sails.js](https://sailsjs.com).
 
+## Boot
+`npm install -g sails`
+`yarn`
+`sails lift`
+
 ### Links
 
 + [Get started](https://sailsjs.com/get-started)
