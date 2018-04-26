@@ -12,6 +12,7 @@ module.exports.routes = {
 
   'GET /api/auth/authorize' : 'AuthController.authorize',
   'GET /api/auth/token' : 'AuthController.token',
-  'GET /api/auth/whoami': 'AuthController.whoAmI'
+  'GET /api/auth/whoami': 'AuthController.whoAmI',
+  'GET /api/auth/logout': 'AuthController.logout'
 
 };

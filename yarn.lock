@@ -984,6 +984,12 @@ eve-sso-simple@^2.0.1:
     querystring "^0.2.0"
     request "^2.81.0"
 
+eve-swagger-simple@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/eve-swagger-simple/-/eve-swagger-simple-1.1.0.tgz#198ef628f85c2a4861634ee45b4f19e127db1dc1"
+  dependencies:
+    request "^2.81.0"
+
 expand-brackets@^0.1.4:
   version "0.1.5"
   resolved "https://registry.yarnpkg.com/expand-brackets/-/expand-brackets-0.1.5.tgz#df07284e342a807cd733ac5af72411e581d1177b"
