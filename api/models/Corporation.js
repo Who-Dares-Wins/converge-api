@@ -1,5 +1,5 @@
 /**
- * Type.js
+ * Corporation.js
  *
  * @description :: A model definition.  Represents a database table/collection/etc.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
@@ -9,16 +9,22 @@ module.exports = {
 
   attributes: {
 
-    typeId: { type: 'ref', columnType: 'bigint', unique: true },
+    corporationId: { type: 'ref', columnType: 'bigint', unique: true },
 
     name: 'string',
 
-    description: 'string'
+    ticker: 'string',
+
+    memberCount: 'number',
+
+    // Associations
+
+    alliance: { model: 'alliance' }
 
   },
 
   customToJSON: function() {
-    this.typeId = parseInt(this.typeId);
+    this.corporationId = parseInt(this.corporationId);
 
     return this;
   }

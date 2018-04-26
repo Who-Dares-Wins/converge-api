@@ -16,7 +16,7 @@ module.exports = {
       client_id,
       client_secret,
       redirect_uri: `${process.env.BASE_URL}/api/auth/token`,
-      scope: 'esi-location.read_location.v1 esi-location.read_ship_type.v1 esi-location.read_online.v1'
+      scope: 'esi-calendar.respond_calendar_events.v1 esi-skills.read_skills.v1 esi-skills.read_skillqueue.v1 esi-clones.read_clones.v1 esi-assets.read_assets.v1 esi-fleets.read_fleet.v1 esi-fittings.read_fittings.v1 esi-fittings.write_fittings.v1 esi-location.read_online.v1 esi-clones.read_implants.v1 esi-characterstats.read.v1'
     }, res);
   },
 
@@ -29,10 +29,16 @@ module.exports = {
       req.session.characterToken = characterToken;
       req.session.authenticated = true;
 
-      let character = await Updater.character(characterToken.CharacterID, accessTokens);
+      let character = await EVE.character(characterToken.CharacterID);
 
-      if (!character)
-        return res.redirect(`${process.env.BASE_URL}/authorize`);
+      let payload = {
+        accessToken: accessTokens.access_token,
+        refreshToken: accessTokens.refresh_token,
+        corporation: character.corporation,
+        alliance: character.alliance
+      };
+
+      await Character.update({ characterId: characterToken.CharacterID }, payload);
 
       res.redirect(`${process.env.BASE_URL}/home`);
     });
@@ -42,9 +48,22 @@ module.exports = {
     if (!req.session || !req.session.characterToken)
       return res.status(401).send();
 
-    let character = await Character.findOne({ characterId: req.session.characterToken.CharacterID });
+    let character = await Character.findOne({ characterId: req.session.characterToken.CharacterID })
+      .populate('corporation')
+      .populate('alliance');
+
+    if (!character)
+      return res.status(401).send();
 
     return res.status(200).json({ character });
+  },
+
+  logout: (req, res, next) => {
+    if (req.session)
+      req.session.destroy();
+
+    res.clearCookie('sails.sid');
+    res.status(200).json({});
   }
 
 };

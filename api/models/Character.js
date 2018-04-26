@@ -9,7 +9,7 @@ module.exports = {
 
   attributes: {
 
-    characterId: { type: 'number', unique: true },
+    characterId: { type: 'ref', columnType: 'bigint', unique: true },
 
     name: 'string',
 
@@ -17,9 +17,19 @@ module.exports = {
 
     refreshToken: 'string',
 
+    lastEsiUpdate: 'string',
+
+    // Associations
+
+    corporation: { model: 'corporation' },
+
+    alliance: { model: 'alliance' }
+
   },
 
   customToJSON: function() {
+    this.characterId = parseInt(this.characterId);
+
     return _.omit(this, [
       'accessToken',
       'refreshToken'
