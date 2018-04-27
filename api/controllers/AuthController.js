@@ -25,37 +25,48 @@ module.exports = {
       client_id,
       client_secret,
     }, req, res, async(accessTokens, characterToken) => {
-      req.session.accessTokens = accessTokens;
-      req.session.characterToken = characterToken;
-      req.session.authenticated = true;
+      let forceRefresh = true;
+      let character = await EVE.character(characterToken.CharacterID, forceRefresh);
+      let lastLogin = new Date().toISOString();
+      let account;
 
-      let character = await EVE.character(characterToken.CharacterID);
+      if (character.account) {
+        // Character is already associated with an account, so retrieve it.
+        account = await Account.update(character.account, { lastLogin }).fetch();
+        account = _.first(account);
+      } else {
+        // Character is new, so create account.
+        account = await Account.create({ mainCharacter: character.id, lastLogin }).fetch();
+      }
 
       let payload = {
         accessToken: accessTokens.access_token,
         refreshToken: accessTokens.refresh_token,
+        account: account.id,
         corporation: character.corporation,
         alliance: character.alliance
       };
 
       await Character.update({ characterId: characterToken.CharacterID }, payload);
 
-      res.redirect(`${process.env.BASE_URL}/home`);
+      req.session.authenticated = true;
+      req.session.account = account;
+      req.session.accessTokens = accessTokens;
+      req.session.characterToken = characterToken;
+
+      res.redirect(`${process.env.BASE_URL}/`);
     });
   },
 
   whoAmI: async(req, res) => {
-    if (!req.session || !req.session.characterToken)
+    if (!req.session || !req.session.account)
       return res.status(401).send();
 
-    let character = await Character.findOne({ characterId: req.session.characterToken.CharacterID })
-      .populate('corporation')
-      .populate('alliance');
+    let account = await Account.findOne(req.session.account.id)
+      .populate('mainCharacter')
+      .populate('altCharacters');
 
-    if (!character)
-      return res.status(401).send();
-
-    return res.status(200).json({ character });
+    return res.status(200).json({ account });
   },
 
   logout: (req, res, next) => {

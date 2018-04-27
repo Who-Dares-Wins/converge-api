@@ -9,101 +9,127 @@ let ESI = require('eve-swagger-simple');
 
 module.exports = {
 
-  async character(characterId) {
+  async character(characterId, forceRefresh) {
     if (!characterId)
       return;
 
     let localCharacter = await Character.findOne({ characterId });
 
-    if (!localCharacter) {
+    if (!localCharacter || forceRefresh) {
       let {
         name,
         corporation_id: corporationId,
         alliance_id: allianceId
       } = await ESI.request(`/characters/${characterId}`);
 
-      let alliance = await EVE.alliance(allianceId),
-          corporation = await EVE.corporation(corporationId, alliance),
+      let alliance = await EVE.alliance(allianceId, forceRefresh),
+          corporation = await EVE.corporation(corporationId, alliance, forceRefresh),
           lastEsiUpdate = new Date().toISOString();
 
-      localCharacter = await Character.create({
+      let payload = {
         characterId,
         name,
         lastEsiUpdate,
         corporation: corporation ? corporation.id : null,
         alliance: alliance ? alliance.id : null
-      })
-      .intercept('E_UNIQUE', (e) => { sails.log.error(`[Swagger.character] Race condition: Tried to create a character that already exists. ${e}`) })
-      .fetch();
+      };
+
+      if (localCharacter) {
+        localCharacter = await Character.update(localCharacter.id, payload).fetch();
+        localCharacter = _.first(localCharacter);
+      } else {
+        localCharacter = await Character.create(payload);
+      }
     }
 
     return localCharacter;
   },
 
-  async corporation(corporationId, allianceRecord) {
+  async corporation(corporationId, allianceRecord, forceRefresh) {
     if (!corporationId)
       return;
 
     let localCorporation = await Corporation.findOne({ corporationId });
 
-    if (!localCorporation) {
-      let { name,
-            ticker,
-            member_count: memberCount
-          } = await ESI.request(`/corporations/${corporationId}`);
+    if (!localCorporation || forceRefresh) {
+      let { 
+        name,
+        ticker,
+        member_count: memberCount
+      } = await ESI.request(`/corporations/${corporationId}`);
 
-      localCorporation = await Corporation.create({
+      let payload = {
         corporationId,
         name,
         ticker,
         memberCount,
         alliance: allianceRecord ? allianceRecord.id : null
-      })
-      .intercept('E_UNIQUE', (e) => { sails.log.error(`[Swagger.corporation] Race condition: Tried to create a corporation that already exists. ${e}`) })
-      .fetch();
+      };
+
+      if (localCorporation) {
+        localCorporation = await Corporation.update(localCorporation.id, payload).fetch();
+        localCorporation = _.first(localCorporation);
+      } else {
+        localCorporation = await Corporation.create(payload);
+      }
     }
 
     return localCorporation;
   },
 
-  async alliance(allianceId) {
+  async alliance(allianceId, forceRefresh) {
     if (!allianceId)
       return;
 
     let localAlliance = await Alliance.findOne({ allianceId });
 
-    if (!localAlliance || !localAlliance.name) {
-      let { name, ticker } = await ESI.request(`/alliances/${allianceId}`);
+    if (!localAlliance || !localAlliance.name || forceRefresh) {
+      let { 
+        name,
+        ticker
+      } = await ESI.request(`/alliances/${allianceId}`);
 
-      if (!localAlliance) {
-        localAlliance = await Alliance.create({ allianceId, name, ticker })
-          .intercept('E_UNIQUE', (e) => { sails.log.error(`[Swagger.alliance] Race condition: Tried to create an alliance that already exists. ${e}`) })
-          .fetch();
-      } else {
-        localAlliance = await Alliance.update({ allianceId }, { name, ticker }).fetch();
+      let payload = {
+        allianceId,
+        name,
+        ticker
+      };
+
+      if (localAlliance) {
+        localAlliance = await Alliance.update(localAlliance.id, payload).fetch();
         localAlliance = _.first(localAlliance);
+      } else {
+        localAlliance = await Alliance.create(payload);
       }
     }
 
     return localAlliance;
   },
 
-  async type(typeId) {
+  async type(typeId, forceRefresh) {
     if (!typeId)
       return;
 
     let localType = await Type.findOne({ typeId });
 
     if (!localType) {
-      let { name, description } = await ESI.request(`/universe/types/${typeId}`);
+      let {
+        name,
+        description
+      } = await ESI.request(`/universe/types/${typeId}`);
 
-      localType = await Type.create({
+      let payload = {
         typeId,
         name,
         description
-      })
-      .intercept('E_UNIQUE', (e) => { sails.log.error(`[Swagger.type] Race condition: Tried to create a type that already exists. ${e}`) })
-      .fetch();
+      };
+
+      if (localType) {
+        localType = await Type.update(localType.id, payload).fetch();
+        localType = _.first(localType);
+      } else {
+        localType = await Type.create(payload);
+      }
     }
 
     return localType;

@@ -17,6 +17,8 @@ module.exports = {
 
     memberCount: 'number',
 
+    isOwner: 'boolean',
+
     // Associations
 
     alliance: { model: 'alliance' }

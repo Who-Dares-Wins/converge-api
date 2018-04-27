@@ -13,7 +13,9 @@ module.exports = {
 
     name: 'string',
 
-    ticker: 'string'
+    ticker: 'string',
+
+    isOwner: 'boolean'
 
   },
 

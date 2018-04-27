@@ -17,9 +17,27 @@ module.exports.policies = {
   *                                                                          *
   ***************************************************************************/
 
-  // Uncomment and use this once we're passing auth from the frontend
-  // '*': 'sessionAuth',
-  '*': true,
+  // Leave for dev, tighten for prod
+  '*': 'sessionAuth',
+
+  // Blueprint actions to lock down:
+  // find
+  // findOne
+  // create
+  // update
+  // destroy
+  // populate
+  // add
+  // remove
+  // replace
+
+  // TODO
+  // AllianceController: {},
+  // CorporationController: {},
+  // DoctrineController: {},
+  // FittingController: {},
+  // OperationController: {},
+  // TimerController: {},
 
   AuthController: { '*': true }
 
