@@ -21,6 +21,8 @@ module.exports = {
 
     // Associations
 
+    account: { model: 'account' },
+
     corporation: { model: 'corporation' },
 
     alliance: { model: 'alliance' }
