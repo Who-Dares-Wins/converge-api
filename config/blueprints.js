@@ -13,6 +13,8 @@ module.exports.blueprints = {
 
   prefix: '/api',
 
+  linkPrefix: '/api',
+
   restPrefix: '',
 
   pluralize: true,

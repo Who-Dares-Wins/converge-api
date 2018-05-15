@@ -15,7 +15,13 @@ module.exports = {
 
     ticker: 'string',
 
-    isOwner: 'boolean'
+    isOwner: 'boolean',
+
+    // Associations
+
+    corporations: { collection: 'corporation' },
+
+    doctrines: { collection: 'doctrine' }
 
   },
 

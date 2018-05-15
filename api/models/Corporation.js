@@ -21,7 +21,9 @@ module.exports = {
 
     // Associations
 
-    alliance: { model: 'alliance' }
+    alliance: { model: 'alliance' },
+
+    doctrines: { collection: 'doctrine' }
 
   },
 

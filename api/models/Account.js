@@ -17,9 +17,7 @@ module.exports = {
 
     // Associations
 
-    mainCharacter: { model: 'character', required: true },
-
-    altCharacters: { collection: 'character' }
+    characters: { collection: 'character' },
 
   },
 

@@ -12,6 +12,9 @@ let SSO = require('eve-sso-simple'),
 module.exports = {
 
   authorize: (req, res) => {
+    if (req.param('account') && req.session.authenticated && parseInt(req.param('account')) === req.session.account.id)
+      req.session.link = true;
+
     return SSO.login({
       client_id,
       client_secret,
@@ -35,8 +38,18 @@ module.exports = {
         account = await Account.update(character.account, { lastLogin }).fetch();
         account = _.first(account);
       } else {
-        // Character is new, so create account.
-        account = await Account.create({ mainCharacter: character.id, lastLogin }).fetch();
+        if (req.session.authenticated && req.session.link) {
+          // Linking a character to an existing account
+          await Account.addToCollection(req.session.account.id, 'characters', [character.id]);
+          account = await Account.update(req.session.account.id, { lastLogin }).fetch();
+          account = _.first(account);
+
+          req.session.link = false;
+        } else {
+          // Character is new, so create account.
+          account = await Account.create({ lastLogin }).fetch();
+          await Account.addToCollection(account.id, 'characters', [character.id]);
+        }
       }
 
       let payload = {
@@ -63,8 +76,7 @@ module.exports = {
       return res.status(401).send();
 
     let account = await Account.findOne(req.session.account.id)
-      .populate('mainCharacter')
-      .populate('altCharacters');
+      .populate('characters');
 
     return res.status(200).json({ account });
   },
